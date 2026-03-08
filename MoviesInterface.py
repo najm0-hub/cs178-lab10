@@ -9,18 +9,45 @@ import boto3
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Movies')
 
+def get_table():
+    """Return a reference to the DynamoDB Movies table."""
+    dynamodb = boto3.resource("dynamodb", region_name=R"us-east-1")
+    table = dynamodb.Table('Movies')
+    return table
+
 def create_movie():
-    """
-    Prompt user for a Movie Title.
-    Add the movie to the database with the title and an empty Ratings list.
-    """
-    print("creating a movie")
+    table = get_table()
+
+    title = input("Enter movie title: ")
+    year = int(input("Enter movie year: "))
+    genre = input("Enter movie genre: ")
+
+    movie = {
+        "Title": title,
+        "Year": year,
+        "Genre": genre
+    }
+
+    table.put_item(Item=movie)
+
+    print("Creating a movie")
 
 def print_all_movies():
-    """
-    Display all movies in the database.
-    """
-    print("display all movies")
+    """Print all movies in the table."""
+    table = get_table()
+
+    response = table.scan()
+    items = response.get("Items", [])
+
+    if not items:
+        print("No movies found.")
+        return
+
+    print(f"Found {len(items)} movie(s):\n")
+    print (items)
+
+    """for movie in items:
+        create_movie(movie)"""
 
 def update_rating():
     """
