@@ -1,5 +1,5 @@
-# name: YOUR NAME HERE
-# date:
+# name: Najmo Mahamed
+# date: Tuesday 3, 2026
 # description: Implementation of CRUD operations with DynamoDB — CS178 Lab 10
 # proposed score: 0 (out of 5) -- if I don't change this, I agree to get 0 points.
 
