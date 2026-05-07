@@ -1,5 +1,5 @@
 # name: Najmo Mahamed
-# date: Tuesday 3, 2026
+# date: March Tuesday 3, 2026
 # description: Implementation of CRUD operations with DynamoDB — CS178 Lab 10
 # proposed score: 0 (out of 5) -- if I don't change this, I agree to get 0 points.
 
@@ -9,28 +9,25 @@ import boto3
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
 table = dynamodb.Table('Movies')
 
-def get_table():
-    """Return a reference to the DynamoDB Movies table."""
-    dynamodb = boto3.resource("dynamodb", region_name=R"us-east-1")
-    table = dynamodb.Table('Movies')
-    return table
-
 def create_movie():
-    table = get_table()
+    title = input("Enter movie title: ").strip()
 
-    title = input("Enter movie title: ")
-    year = int(input("Enter movie year: "))
-    genre = input("Enter movie genre: ")
+    table.put_item(
+        Item={
+            "Title": title,
+            "Ratings": []
+        }
+    )
 
-    movie = {
-        "Title": title,
-        "Year": year,
-        "Genre": genre
-    }
+    print("Movie added successfully.\n")
 
-    table.put_item(Item=movie)
+def print_movie(movie):
+    """Print movie details."""
+    print("Title:", movie.get("Title"))
+    print("Year:", movie.get("Year"))
+    print("Genre:", movie.get("Genre", "N/A"))
+    print("---------------------")
 
-    print("Creating a movie")
 
 def print_all_movies():
     """Print all movies in the table."""
@@ -44,18 +41,20 @@ def print_all_movies():
         return
 
     print(f"Found {len(items)} movie(s):\n")
-    print (items)
-
-    """for movie in items:
-        create_movie(movie)"""
 
 def update_rating():
-    """
-    Prompt user for a Movie Title.
-    Prompt user for a rating (integer).
-    Append the rating to the movie's Ratings list in the database.
-    """
-    print("updating rating")
+    try:
+        title = input("What is the movie title? ")
+        rating = int(input("What is the rating (integer): "))
+
+        table.update_item(
+            Key={"Title": title},
+            UpdateExpression="SET Ratings = list_append(Ratings, :r)",
+            ExpressionAttributeValues={":r": [rating]}
+        )
+    except Exception:
+        print("error in updating movie rating")
+ 
 
 def delete_movie():
     """
@@ -63,6 +62,8 @@ def delete_movie():
     Delete that item from the database.
     """
     print("deleting movie")
+    title = input("What is the movie title? ")
+    table.delete_item(Key={"Title": title})
 
 def query_movie():
     """
@@ -86,16 +87,17 @@ def main():
     while input_char.upper() != "X":
         print_menu()
         input_char = input("Choice: ")
+
         if input_char.upper() == "C":
-            create_movie()
+            create_book()
         elif input_char.upper() == "R":
-            print_all_movies()
+            read_all_books()
         elif input_char.upper() == "U":
-            update_rating()
+            update_book()
         elif input_char.upper() == "D":
-            delete_movie()
+            delete_book()
         elif input_char.upper() == "Q":
-            query_movie()
+            query_book()
         elif input_char.upper() == "X":
             print("exiting...")
         else:
